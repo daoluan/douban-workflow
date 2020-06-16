@@ -96,11 +96,13 @@ func getItems(searchType string, searchString string) *[]SearchResultItem {
 var wg sync.WaitGroup
 
 func downloadFile(path, url string) {
-	out, _ := os.Create(path)
-	defer out.Close()
-	resp, _ := http.Get(url)
-	defer resp.Body.Close()
-	io.Copy(out, resp.Body)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		out, _ := os.Create(path)
+		defer out.Close()
+		resp, _ := http.Get(url)
+		defer resp.Body.Close()
+		io.Copy(out, resp.Body)
+	}
 	wg.Done()
 }
 
