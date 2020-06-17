@@ -112,7 +112,7 @@ func getImgPath(url string) string {
 	return fmt.Sprintf("/tmp/%v", fn)
 }
 
-func generateResponse(items *[]SearchResultItem, searchType string) {
+func generateResponse(items *[]SearchResultItem, query, searchType string) {
 	baseUrl := fmt.Sprintf("https://%s.douban.com", searchType)
 	r := make([]AlfredItem, 0)
 	for _, i := range *items {
@@ -135,6 +135,13 @@ func generateResponse(items *[]SearchResultItem, searchType string) {
 			},
 		})
 	}
+
+	loadMoreUrl := fmt.Sprintf("https://www.douban.com/search?source=suggest&q=%s", query)
+	r = append(r, AlfredItem{
+		Type:  "file",
+		Title: "Load more",
+		Arg:   loadMoreUrl,
+	})
 	finalRes, _ := json.Marshal(struct {
 		Items []AlfredItem `json:"items"`
 	}{
@@ -149,5 +156,5 @@ func generateResponse(items *[]SearchResultItem, searchType string) {
 func main() {
 	searchType := os.Args[1]
 	query := strings.Join(os.Args[2:], " ")
-	generateResponse(getItems(searchType, query), searchType)
+	generateResponse(getItems(searchType, query), query, searchType)
 }
