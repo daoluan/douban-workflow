@@ -136,7 +136,13 @@ func generateResponse(items *[]SearchResultItem, query, searchType string) {
 		})
 	}
 
-	loadMoreUrl := fmt.Sprintf("https://www.douban.com/search?source=suggest&q=%s", query)
+	cat := 0
+	if searchType == "book" {
+		cat = 1001
+	} else {
+		cat = 1002
+	}
+	loadMoreUrl := fmt.Sprintf("https://www.douban.com/search?source=suggest&q=%v&cat=%v", query, cat)
 	r = append(r, AlfredItem{
 		Type:  "file",
 		Title: "Load more",
